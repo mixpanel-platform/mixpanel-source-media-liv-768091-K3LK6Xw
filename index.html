@@ -100,8 +100,9 @@
           var row = [];
           var name = p.$properties.$name ? p.$properties.$name : p.$properties.$first_name + p.$properties.$last_name;
           var email = p.$properties.$email;
-          var profile_url = '<a href="https://mixpanel.com/report/768091/explore/#user?distinct_id=' + p.$distinct_id + '"> Explore </a>';
-          var device_count = p.$properties['Device List'].length;
+          var profile_url = '<a href="https://mixpanel.com/report/768091/explore/#user?distinct_id=' + p.$distinct_id + '" target="_blank"> Explore </a>';
+          var device_count = p['$properties']['Device List'].length;
+          console.log(device_count);
           row.push(name, email, profile_url, device_count);
           tableData.push(row);
         });
