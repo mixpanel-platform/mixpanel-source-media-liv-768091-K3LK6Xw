@@ -102,6 +102,7 @@
           var email = p.$properties.$email;
           var profile_url = '<a href="https://mixpanel.com/report/768091/explore/#user?distinct_id=' + p.$distinct_id + '" target="_blank"> Explore </a>';
           var device_count = p['$properties']['Device List'].length;
+          console.log(p['$properties']['Device List']);
           console.log(device_count);
           row.push(name, email, profile_url, device_count);
           tableData.push(row);
