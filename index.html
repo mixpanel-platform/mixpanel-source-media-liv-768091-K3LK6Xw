@@ -99,9 +99,11 @@
         _.each(profiles, function(p){
           var row = [];
           var name = p.$properties.$name ? p.$properties.$name : [p.$properties.$first_name, p.$properties.$last_name].join(' ');
-          var name = name ? name : '-';
+          if (varname === ' ') {
+            name = '-';
+          }
           var email = p.$properties.$email ? p.$properties.$email : '-';
-          var profile_url = '<a href="https://mixpanel.com/report/768091/explore/#user?distinct_id=' + p.$distinct_id + '" target="_blank"> Explore </a>';
+          var profile_url = ['<a href="https://mixpanel.com/report/768091/explore/#user?distinct_id=', p.$distinct_id, '" target="_blank"> Explore </a>'].join();
           var device_count = _.keys(p['$properties']['Device List']).length;
           row.push(name, email, profile_url, device_count);
           tableData.push(row);
