@@ -99,7 +99,7 @@
         _.each(profiles, function(p){
           var row = [];
           var name = p.$properties.$name ? p.$properties.$name : [p.$properties.$first_name, p.$properties.$last_name].join(' ');
-          if (varname === ' ') {
+          if (name === ' ') {
             name = '-';
           }
           var email = p.$properties.$email ? p.$properties.$email : '-';
