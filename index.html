@@ -67,7 +67,7 @@
                 profiles.push(profileData);
               });
             };
-            console.log(profiles);
+
             $('#dataTable').DataTable({
               data: transformTableData(profiles),
               order: [[ 3, "desc" ]]
@@ -105,7 +105,6 @@
           row.push(name, email, profile_url, device_count);
           tableData.push(row);
         });
-        console.log(tableData);
         return tableData;
       };
       runQuery();
