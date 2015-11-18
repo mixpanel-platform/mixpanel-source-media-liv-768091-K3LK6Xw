@@ -17,9 +17,23 @@
       <div style="clear: both;"></div>
       <div id="graph"></div>
     </div>
-    <div id="table"></div>
+    <table id="dataTable" class=".panel .panel-default" cellspacing="0" width="100%">\
+      <thead class=".panel .panel-heading">\
+          <tr>
+              <th>Name</th>
+              <th>Profile URL</th>
+              <th>Number of Devices</th>
+          </tr>
+      </thead>
+      <tfoot>
+          <tr>
+              <th>Name</th>
+              <th>Profile URL</th>
+              <th>Number of Devices</th>
+          </tr>
+      </tfoot>
+    </table>
     <script>
-      
       function getAdditionalProfiles(propertyName, pageNum, sessionId, output, callback){
         MP.api.people({where: propertyName, page: pageNum, session_id: sessionId}).done(function(peopleProf) {
           numPeople = Object.keys(peopleProf.values().results).length;
@@ -43,7 +57,6 @@
           // This is invoked after all of the people profiles have been loaded
           // If pagination is required, it is passed as a callback to "getAdditionalProfiles".
           function finishPagination(propertyName, output, totalProfiles) {
-            $('.confirm-text').html("# People profiles that match: <strong>" + totalProfiles + "</strong>").css("color", "rgb(95,105,131)");
             // Create list of profiles
             var profiles = [];
             for (i = 0; i < output.length; i++) {
@@ -54,6 +67,7 @@
             };
             console.log(profiles);
           };
+          
           // Requesting the People API
           var sessionId = results.values()['session_id'];
           var numPeople = Object.keys(results.values().results).length;
@@ -68,16 +82,19 @@
             pageNum++;
             getAdditionalProfiles(propertyName, pageNum, sessionId, output, finishPagination);
           };
-        }).fail(function(d) {
-          // $('.confirm-text').html("Error: Please enter a valid property selector.").css("color", "red");
-          console.log(d);
+          
+        }).fail(function(e) {
+          console.log(e);
         });
-        // if (eventName) {
-        //   MP.api.segment(eventName, propName, dateRange).done(function(results) {
-        //     eventGraph.MPChart('setData', results);
-        //     eventTable.MPTable('setData', results);
-        //   });
-        // }
+      };
+      
+      var transformTableData = function(profiles) {
+        var tableData = [];
+        _.each(profiles, function(p){
+          var row = [];
+          var p_url = 'https://mixpanel.com/report/768091/explore/#user?distinct_id=' + p.$properties.distinct_id;
+          row.push()
+        });
       };
       runQuery();
     </script>
