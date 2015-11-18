@@ -67,7 +67,7 @@
                 profiles.push(profileData);
               });
             };
-
+            console.log(profiles);
             $('#dataTable').DataTable({
               data: transformTableData(profiles),
               order: [[ 3, "desc" ]]
