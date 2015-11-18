@@ -18,7 +18,7 @@
       <div id="graph"></div>
     </div>
     <table id="dataTable" class=".panel .panel-default" cellspacing="0" width="100%">\
-      <thead class=".panel .panel-heading">\
+      <thead class=".panel .panel-heading">
           <tr>
               <th>Name</th>
               <th>Email</th>
@@ -69,7 +69,7 @@
             };
             console.log(profiles);
             $('#dataTable').DataTable({
-              data: tableData,
+              data: transformTableData(profiles),
               order: [[ 3, "desc" ]]
             });
           };
