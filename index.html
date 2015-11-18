@@ -21,6 +21,7 @@
       <thead class=".panel .panel-heading">\
           <tr>
               <th>Name</th>
+              <th>Email</th>
               <th>Profile URL</th>
               <th>Number of Devices</th>
           </tr>
@@ -28,6 +29,7 @@
       <tfoot>
           <tr>
               <th>Name</th>
+              <th>Email</th>
               <th>Profile URL</th>
               <th>Number of Devices</th>
           </tr>
@@ -66,6 +68,10 @@
               });
             };
             console.log(profiles);
+            $('#dataTable').DataTable({
+              data: tableData,
+              order: [[ 3, "desc" ]]
+            });
           };
           
           // Requesting the People API
@@ -91,9 +97,14 @@
       var transformTableData = function(profiles) {
         var tableData = [];
         _.each(profiles, function(p){
-          var row = [];
-          var p_url = 'https://mixpanel.com/report/768091/explore/#user?distinct_id=' + p.$properties.distinct_id;
-          row.push()
+          var row = [],
+              name = p.$properties.$name ? p.$properties.$name : p.$properties.$first_name + p.$properties.$last_name,
+              email = p.$properties.$email,
+              profile_url = '<a href="https://mixpanel.com/report/768091/explore/#user?distinct_id=' + p.$distinct_id + '"> Explore </a>';
+              device_count = p.$properties['Device List'].length;
+          
+          row.push(name, email, profile_url, device_count);
+          tableData.push(row);
         });
       };
       runQuery();
