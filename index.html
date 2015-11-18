@@ -4,7 +4,9 @@
     <meta charset="utf-8">
     <link rel="stylesheet" type="text/css" href="https://cdn.mxpnl.com/libs/mixpanel-platform/css/reset.css">
     <link rel="stylesheet" type="text/css" href="https://cdn.mxpnl.com/libs/mixpanel-platform/build/mixpanel-platform.v0.latest.min.css">
+    <link rel="stylesheet" type="text/css" href="//cdn.datatables.net/1.10.10/css/jquery.dataTables.min.css">
     <script src="https://cdn.mxpnl.com/libs/mixpanel-platform/build/mixpanel-platform.v0.latest.min.js"></script>
+    <script src="//cdn.datatables.net/1.10.10/js/jquery.dataTables.min.js"></script>
   </head>
   <body class="mixpanel-platform-body">
     <div class="mixpanel-platform-section">
@@ -17,34 +19,67 @@
     </div>
     <div id="table"></div>
     <script>
-      var eventSelect = $('#eventSelect').MPEventSelect();
-      var propSelect  = $('#propSelect').MPPropertySelect();
-      var dateSelect  = $('#dateSelect').MPDatepicker();
-      var eventGraph  = $('#graph').MPChart({chartType: 'line'});
-      var eventTable  = $('#table').MPTable({
-        showPercentages: true,
-        firstColHeader: 'Event'
-      });
-
-      var runQuery = function() {
-        var eventName = eventSelect.MPEventSelect('value'),
-            propName  = propSelect.MPPropertySelect('value'),
-            dateRange = dateSelect.MPDatepicker('value');
-
-        if (eventName) {
-          MP.api.segment(eventName, propName, dateRange).done(function(results) {
-            eventGraph.MPChart('setData', results);
-            eventTable.MPTable('setData', results);
-          });
-        }
+      
+      function getAdditionalProfiles(propertyName, pageNum, sessionId, output, callback){
+        MP.api.people({where: propertyName, page: pageNum, session_id: sessionId}).done(function(peopleProf) {
+          numPeople = Object.keys(peopleProf.values().results).length;
+          if (numPeople == 1000) {
+            pageNum++;
+            output.push(peopleProf.values().results);
+            getAdditionalProfiles(propertyName, pageNum, sessionId, output, callback);
+          } else { 
+            // Ending iteration
+            output.push(peopleProf.values().results)
+            totalProfiles = (pageNum)*1000 + numPeople;
+            callback(propertyName, output, totalProfiles);
+          }; 
+        })
       };
-      eventSelect.on('change', function(e, eventName) {
-        propSelect.MPPropertySelect('setEvent', eventName);
-        $("#by").show();
-        runQuery();
-      });
-      propSelect.on('change', runQuery);
-      dateSelect.on('change', runQuery);
+      
+      var runQuery = function() {
+        var propertyName = '(defined (properties["Device List"]))';
+        MP.api.people({where: propertyName, page: 0}).done(function(results) {
+          
+          // This is invoked after all of the people profiles have been loaded
+          // If pagination is required, it is passed as a callback to "getAdditionalProfiles".
+          function finishPagination(propertyName, output, totalProfiles) {
+            $('.confirm-text').html("# People profiles that match: <strong>" + totalProfiles + "</strong>").css("color", "rgb(95,105,131)");
+            // Create list of profiles
+            var profiles = [];
+            for (i = 0; i < output.length; i++) {
+              _.each(_.keys(output[i]), function(profileIndex){
+                var profileData = output[i][profileIndex];
+                profiles.push(profileData);
+              });
+            };
+            console.log(profiles);
+          };
+          // Requesting the People API
+          var sessionId = results.values()['session_id'];
+          var numPeople = Object.keys(results.values().results).length;
+          var pageNum = 0;
+          // If the page size is not 1000, we can continue. Otherwise, we need to paginate.
+          if (numPeople !== 1000) {
+            output = [results.values().results];
+            var totalProfiles = numPeople;
+            finishPagination(propertyName, output, totalProfiles);
+          } else {
+            output = [results.values().results];
+            pageNum++;
+            getAdditionalProfiles(propertyName, pageNum, sessionId, output, finishPagination);
+          };
+        }).fail(function(d) {
+          // $('.confirm-text').html("Error: Please enter a valid property selector.").css("color", "red");
+          console.log(d);
+        });
+        // if (eventName) {
+        //   MP.api.segment(eventName, propName, dateRange).done(function(results) {
+        //     eventGraph.MPChart('setData', results);
+        //     eventTable.MPTable('setData', results);
+        //   });
+        // }
+      };
+      runQuery();
     </script>
   </body>
 </html>
